@@ -3,6 +3,11 @@
     <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;net40;net45;net461</TargetFrameworks>
     <OutputType>exe</OutputType>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="MicrosoftExtensionsAdapter\**" />
+    <EmbeddedResource Remove="MicrosoftExtensionsAdapter\**" />
+    <None Remove="MicrosoftExtensionsAdapter\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CodeProject.ObjectPool\CodeProject.ObjectPool.csproj" />

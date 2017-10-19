@@ -37,7 +37,7 @@ namespace CodeProject.ObjectPool.Core
     ///   The type of the object that which will be managed by the pool. The pooled object have to be
     ///   a sub-class of PooledObject.
     /// </typeparam>
-    public sealed class PooledObjectBuffer<T> : IEnumerable<T>
+    public sealed class PooledObjectBuffer<T> : IEnumerable<T>, IPooledObjectBuffer<T>
         where T : PooledObject
     {
 #if NET40

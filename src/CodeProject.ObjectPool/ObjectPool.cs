@@ -10,6 +10,7 @@
 
 using CodeProject.ObjectPool.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -169,11 +170,14 @@ namespace CodeProject.ObjectPool
         /// <summary>
         ///   The concurrent buffer containing pooled objects.
         /// </summary>
-        protected PooledObjectBuffer<T> PooledObjects { get; } = new PooledObjectBuffer<T>();
+#if NETSTANDARD1_0
+        protected IPooledObjectBuffer<T> PooledObjects { get; } = new PooledObjectBuffer<T>();
+#else
+        protected IPooledObjectBuffer<T> PooledObjects { get; } = new BlockPooledObjectBuffer<T>(100);
+#endif
+#endregion Public Properties
 
-        #endregion Public Properties
-
-        #region Finalizer
+#region Finalizer
 
         /// <summary>
         ///   ObjectPool destructor.
@@ -187,9 +191,9 @@ namespace CodeProject.ObjectPool
             _evictionTimer?.Dispose();
         }
 
-        #endregion Finalizer
+#endregion Finalizer
 
-        #region Pool Operations
+#region Pool Operations
 
         /// <summary>
         ///   Clears the pool and destroys each object stored inside it.
@@ -288,9 +292,9 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        #endregion Pool Operations
+#endregion Pool Operations
 
-        #region Protected Methods
+#region Protected Methods
 
         /// <summary>
         ///   Used to schedule an async validation and eviction job.
@@ -380,7 +384,7 @@ namespace CodeProject.ObjectPool
                     _evictionActionTicket = _evictionTimer.Schedule(() =>
                     {
                         // Local copy, since the buffer might change.
-                        var pooledObjects = PooledObjects.ToArray();
+                        var pooledObjects = (PooledObjects as IEnumerable<T>).ToArray();
 
                         // All items which are not valid will be destroyed.
                         foreach (var pooledObject in pooledObjects)
@@ -395,6 +399,6 @@ namespace CodeProject.ObjectPool
             }
         }
 
-        #endregion Protected Methods
+#endregion Protected Methods
     }
 }
